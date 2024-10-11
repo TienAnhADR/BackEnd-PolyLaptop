@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const UserRouter = require('./routers/UserRouter')
+const HangRouter = require('./routers/HangRouter')
 require('dotenv').config()
 const app = express()
 
@@ -17,6 +18,7 @@ app.use((req, res, next) => {
   next(); // Đảm bảo gọi next() để yêu cầu tiếp tục đến route handler
 });
 app.use('/auth',UserRouter)
+app.use('/hang',HangRouter)
 
 app.get('/', (req, res) => {
   res.send('Hello World!')

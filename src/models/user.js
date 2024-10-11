@@ -8,7 +8,10 @@ const UserSchema = new mongoose.Schema({
     Email: {type: String, require: true},
     Sdt: {type: String, require: true},
     Avatar: {type: String},
-    DiaChi: {type: String}
+    DiaChi: {type: String},
+    Role: {type: String, enum: ['admin','khachhang'], default: 'khachhang'},
+    AccessToken:{ type: String},
+    RefeshToken: {type: String}
 })
 UserSchema.pre('save', async function (next) {
     if(this.isModified('Password')){
