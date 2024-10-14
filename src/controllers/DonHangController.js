@@ -3,7 +3,7 @@ const DonHangSchema = require('../models/DonHang')
 const DonHangCT = require('../models/DonHangCT')
 const HoaDonSchema = require('../models/HoaDon')
 const SanphamCT = require('../models/ChiTietSP')
-let checkkk = 0
+// let checkkk = 0
 
 exports.getDonHang_Admin = async (req, res) => {
     try {
@@ -89,7 +89,7 @@ exports.postDonHang = async (req, res) => {
 
             let checkkk = 0;
 
-            // Sử dụng for...of thay vì forEach để sử dụng async/await đúng cách
+           
             for (const item of SanPhamCTs) {
                 const spct = await SanphamCT.findById(item.idSanPhamCT);
 
