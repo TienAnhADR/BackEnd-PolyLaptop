@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const ChiTietSanPhamSchema = new mongoose.Schema({
-    _idSanPham:{ 
+    idSanPham:{ 
         type: mongoose.Types.ObjectId,
         ref: 'sanpham',
         require: true
@@ -34,5 +34,5 @@ const ChiTietSanPhamSchema = new mongoose.Schema({
         require: true
     }
 })
-const ChiTietSP = mongoose.model('ChiTietSanPham', ChiTietSanPhamSchema)
+const ChiTietSP = mongoose.model('chitietsanpham', ChiTietSanPhamSchema)
 module.exports = ChiTietSP

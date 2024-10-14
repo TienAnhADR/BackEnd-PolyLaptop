@@ -1,4 +1,4 @@
-const User = require('../models/user')
+const User = require('../models/User')
 const jwt = require('jsonwebtoken')
 
 // tạo JWT
@@ -97,15 +97,15 @@ exports.refeshToken = async (req, res) => {
         // console.log(user);
 
         if (!user) return res.status(402).json({ message: "Refesh token không hợp lệ" })
-            // console.log(process.env.JWT_REFRESH_SECRE);
-            
+        // console.log(process.env.JWT_REFRESH_SECRE);
+
         // xác thực refesh token
         jwt.verify(RefeshToken, process.env.JWT_REFRESH_SECRE, (err, decoded) => {
             // console.log(decoded);
-            
+
             if (err) {
                 // console.log(err);
-                
+
                 return res.status(403).json({ message: err.message })
             }
             const newAccessToken = generateToken(user)
@@ -115,4 +115,18 @@ exports.refeshToken = async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 
+}
+exports.uploadAvatar = async (req, res) => {
+    try {
+        const _id = req.params.id        
+        if (!req.file) return res.status(400).json({ message: 'Không có file được tải lên' })
+        const Avatar = `http://${process.env.IP}/${process.env.PORT}/uploads/${req.file.filename}`
+        const user = await User.findById(_id)
+        if(!user) return res.status(402).json({message:'Không tìm thấy người dùng'})
+        user.Avatar = Avatar
+        await user.save()
+        res.status(200).json({message:'Cập nhật Avatar thành công', data: Avatar})
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
 }

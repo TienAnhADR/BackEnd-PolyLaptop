@@ -8,7 +8,8 @@ const SanPhamSchema = new mongoose.Schema({
     tenSP: {
         type: String,
         require: true
-    }
+    },
+    anhSP: {type: [String]}
 })
 const SanPham = mongoose.model('sanpham',SanPhamSchema)
 module.exports = SanPham

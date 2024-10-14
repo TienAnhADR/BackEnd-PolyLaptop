@@ -1,5 +1,4 @@
 const Hang = require('../models/HangSP')
-const { protect } = require('../middleware/authMiddleware')
 exports.getHang = async (req, res) => {
     const hang = await Hang.find()
     if (!hang) return res.status(400).json({ message: 'Không có hãng nào' })
