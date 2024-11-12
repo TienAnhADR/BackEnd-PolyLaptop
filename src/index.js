@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const cors = require('cors')
 const path = require('path')
 const UserRouter = require('./routers/UserRouter')
 const HangRouter = require('./routers/HangRouter')
@@ -20,7 +21,7 @@ const port = process.env.PORT || 5000
 
 
 
-
+app.use(cors())
 app.use(express.json())
 app.use((req, res, next) => {
   const { method, url } = req;

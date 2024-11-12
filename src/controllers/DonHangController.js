@@ -35,7 +35,7 @@ exports.getDonHang_KhachHang = async (req, res) => {
 //         if (Type === 'Thanh toán trực tiếp') {
 //             const newDonHang = await DonHangSchema.create({ idKhachHang, TrangThai: 'Thành công', Type })
 //             await newDonHang.save()
-            
+
 //             for(const item of SanPhamCTs){
 //                 const spct = await SanphamCT.findById(item.idSanPhamCT)
 //                 if(spct.SoLuong<item.SoLuongMua || spct.SoLuong <= 0){
@@ -43,7 +43,7 @@ exports.getDonHang_KhachHang = async (req, res) => {
 //                      break
 //                 }
 
-                
+
 //                 const newDonHangCT = new DonHangCT({
 //                     idDonHang: newDonHang._id,
 //                     idSanPhamCT: item.idSanPhamCT,
@@ -55,13 +55,13 @@ exports.getDonHang_KhachHang = async (req, res) => {
 //                 }
 //                 const updateSoLuongSPCT = await SanphamCT.findByIdAndUpdate(item.idSanPhamCT,{SoLuong: newSL},{new: true})
 //                 // console.log(checkkk);
-                
-                
+
+
 //                 await newDonHangCT.save()
 //                 await updateSoLuongSPCT.save()
 //             };
 //             console.log(checkkk);
-            
+
 //             if(checkkk > 0) return res.status(400).json({message:`Sản phẩm nào đó không đủ số lượng bạn mua`})
 
 //             const newHoaDon = new HoaDonSchema({
@@ -89,14 +89,14 @@ exports.postDonHang = async (req, res) => {
 
             let checkkk = 0;
 
-           
+
             for (const item of SanPhamCTs) {
                 const spct = await SanphamCT.findById(item.idSanPhamCT);
 
                 // Kiểm tra số lượng sản phẩm trong kho
                 if (spct.SoLuong < item.SoLuongMua || spct.SoLuong <= 0) {
                     checkkk = 1;
-                    break; // Nếu một sản phẩm không đủ, dừng kiểm tra
+                    break;
                 }
 
                 const newDonHangCT = new DonHangCT({
@@ -124,9 +124,100 @@ exports.postDonHang = async (req, res) => {
             });
             await newHoaDon.save();
 
-            return res.status(200).json({ message: 'Mua Hàng thành công' });
+            return res.status(200).json({ message: 'Mua Hàng thành công', data: newHoaDon });
         }
+
+        // tạo đơn hàng mua online
+
+        const newDonHang = await DonHangSchema.create({ idKhachHang, TrangThai: 'Chờ duyệt', Type });
+        await newDonHang.save();
+
+        let checkkk = 0;
+        for (const item of SanPhamCTs) {
+            const spct = await SanphamCT.findById(item.idSanPhamCT);
+
+            // Kiểm tra số lượng sản phẩm trong kho
+            if (spct.SoLuong < item.SoLuongMua || spct.SoLuong <= 0) {
+                checkkk = 1;
+                break;
+            }
+
+            const newDonHangCT = new DonHangCT({
+                idDonHang: newDonHang._id,
+                idSanPhamCT: item.idSanPhamCT,
+                SoLuongMua: item.SoLuongMua
+            });
+
+
+
+            await newDonHangCT.save();
+
+        }
+
+        // Nếu có sản phẩm không đủ số lượng
+        if (checkkk > 0) {
+            return res.status(400).json({ message: `Sản phẩm nào đó không đủ số lượng bạn mua` });
+        }
+        res.status(200).json({ message: 'Đặt hàng thành công', data: newDonHang });
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
+// duyệt đơn admin
+exports.duyetDonHang_Admin = async (req, res) => {
+    try {
+        const _id = req.params.id
+        const idAdmin = req.user._id
+        const listCTDH = await DonHangCT.find({ idDonHang: _id })
+        let checkSoLuong = 0
+        for (const item of listCTDH) {
+            const spct = await SanphamCT.findById(item.idSanPhamCT);
+            if (spct.SoLuong < item.SoLuongMua || spct.SoLuong <= 0) {
+                checkSoLuong = 1;
+                break;
+            }
+            const newSL = spct.SoLuong - item.SoLuongMua;
+
+            const updateSoLuongSPCT = await SanphamCT.findByIdAndUpdate(item.idSanPhamCT, { SoLuong: newSL }, { new: true });
+            await updateSoLuongSPCT.save();
+
+        }
+        if (checkSoLuong > 0) {
+            return res.status(400).json({ message: `Sản phẩm nào đó không đủ số lượng vui lòng nhập thêm hàng` });
+        }
+
+        const updateDonHang = await DonHangSchema.findByIdAndUpdate(_id, { TrangThai: 'Đang vận chuyển', idAdmin }, { new: true })
+        res.status(200).json({ message: 'Duyệt đơn hàng thành công', data: updateDonHang })
+
+
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+
+}
+
+// hủy đơn hàng nếu đơn hàng chưa được duyệt
+exports.huyDon_KhachHang = async (req, res) => {
+
+    try {
+        const _id = req.params.id
+        const donHang = await DonHangSchema.findById(_id)
+        if (donHang.TrangThai != 'Chờ duyệt') return res.status(400).json({ message: 'đơn hàng này đang giao không thể hủy' })
+        const newDonHang = await DonHangSchema.findByIdAndUpdate(_id,{TrangThai: 'Hủy'})
+        const listSPCT = await DonHangCT.find({idDonHang: _id})
+        // for (const item of listSPCT) {
+        //     const spct = await SanphamCT.findById(item.idSanPhamCT)
+        //     const newSL = spct.SoLuong + item.SoLuongMua;
+
+        //     const updateSoLuongSPCT = await SanphamCT.findByIdAndUpdate(item.idSanPhamCT, { SoLuong: newSL }, { new: true });
+        //     await updateSoLuongSPCT.save();
+            
+        // }
+        newDonHang.save()
+        res.status(200).json({ message: 'Hủy đơn thành công', data: newDonHang })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}

@@ -1,5 +1,5 @@
 const express = require('express')
-const {registerUser,loginUser,refeshToken, uploadAvatar} = require('../controllers/UserController')
+const {registerUser,loginUser,refeshToken, uploadAvatar, loginAdmin} = require('../controllers/UserController')
 const { protect } = require('../middleware/authMiddleware')
 const upload = require('../config/upload')
 const router = express.Router()
@@ -10,6 +10,9 @@ router.post('/register',registerUser)
 
 // đăng nhập người dùng
 router.post('/login',loginUser)
+
+// đăng nhập admin
+router.post('/login/admin',loginAdmin)
 
 // RefeshToken
 router.post('/refesh-token',refeshToken)

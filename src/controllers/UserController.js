@@ -56,7 +56,7 @@ exports.loginUser = async (req, res) => {
 
         // const isMatch = await user.matchPassword(Password)
         // console.log(isMatch);
-
+        if(user.Role !== 'khachhang') return res.status(400).json({message: 'bạn không phải là khách hàng'})
 
         if (user && (await user.matchPassword(Password))) {
             const AccessToken = generateToken(user)
@@ -85,6 +85,41 @@ exports.loginUser = async (req, res) => {
         res.status(500).json({ message: error.message })
 
     }
+}
+exports.loginAdmin = async (req,res) =>{
+    const { UserName, Password } = req.body
+    if (!UserName || !Password) return res.status(400).json({ message: 'Không để trống dữ liệu' })
+    try {
+        const user = await User.findOne({ UserName })
+        if(user.Role !== 'admin') return res.status(400).json({message: 'bạn không phải là admin'})
+
+            if (user && (await user.matchPassword(Password))) {
+                const AccessToken = generateToken(user)
+                const RefeshToken = generateRefeshToken(user)
+                user.RefeshToken = RefeshToken
+                await user.save()
+                res.json({
+                    _id: user._id,
+                    UserName: user.UserName,
+                    HoTen: user.HoTen,
+                    Tuoi: user.Tuoi,
+                    Email: user.Email,
+                    Sdt: user.Sdt,
+                    Avatar: user.Avatar,
+                    DiaChi: user.DiaChi,
+                    Role: user.Role,
+                    AccessToken,
+                    RefeshToken
+    
+                })
+            }
+            else {
+                res.status(401).json({ message: "UserName hoặc mật khẩu không đúng" })
+            }
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+
 }
 exports.refeshToken = async (req, res) => {
     const { RefeshToken } = req.body
