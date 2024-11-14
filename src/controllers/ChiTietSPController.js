@@ -15,7 +15,7 @@ exports.getListSanPhamCT = async (req, res) => {
 exports.getListSP = async (req, res) => {
     const idSanPham = req.params.id
     try {
-        const listSPCT = await ChiTietSP.find({ idSanPham })
+        const listSPCT = await ChiTietSP.find({ idSanPham }).populate('idSanPham','anhSP ')
         if (!listSPCT) return res.status(400).json({ message: 'Không có chi tiết sản phẩm nào mang mã sản phẩm này' })
         res.status(200).json({ message: `Hiển thị danh sách sản phẩm thành công`, data: listSPCT })
     } catch (error) {

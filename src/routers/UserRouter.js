@@ -1,6 +1,6 @@
 const express = require('express')
-const {registerUser,loginUser,refeshToken, uploadAvatar, loginAdmin} = require('../controllers/UserController')
-const { protect } = require('../middleware/authMiddleware')
+const {registerUser,loginUser,refeshToken, uploadAvatar, loginAdmin, getListUser} = require('../controllers/UserController')
+const { protect, admin } = require('../middleware/authMiddleware')
 const upload = require('../config/upload')
 const router = express.Router()
 
@@ -18,5 +18,7 @@ router.post('/login/admin',loginAdmin)
 router.post('/refesh-token',refeshToken)
 
 router.put('/upload-avatar/:id',protect,upload.single('avatar'),uploadAvatar)
+
+router.get('/user',protect,admin,getListUser)
 
 module.exports = router

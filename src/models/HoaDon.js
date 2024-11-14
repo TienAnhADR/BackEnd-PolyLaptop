@@ -8,6 +8,11 @@ const HoaDonSchema = new mongoose.Schema({
     NgayNhanHang: {
         type: Date,
         default: Date.now()
+    },
+    TongTien: {
+        type: Number,
+        require: true,
+        default: 0
     }
 })
 const HoaDon = mongoose.model('hoadon',HoaDonSchema)

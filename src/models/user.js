@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema({
     Sdt: {type: String, require: true},
     Avatar: {type: String},
     DiaChi: {type: String},
-    Role: {type: String, enum: ['admin','khachhang'], default: 'khachhang'},
+    Role: {type: String, enum: ['admin','Khách hàng'], default: 'Khách hàng'},
     AccessToken:{ type: String},
     RefeshToken: {type: String}
 })

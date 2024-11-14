@@ -1,9 +1,14 @@
 const SanPham = require('../models/SanPham')
+const Hang = require('../models/HangSP')
 exports.getSanPham = async (req, res) => {
     try {
-        const sanpham = await SanPham.find()
+        const sanpham = await SanPham.find().populate('idHangSP','TenHang','hang')
+        
         if (!sanpham) return res.status(400).json({ message: 'Không có dữ liệu' })
+            // console.log(sanpham);
+            
         res.status(200).json({ message: 'lấy danh sách sản phẩm thành công', data: sanpham })
+
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
@@ -20,7 +25,7 @@ exports.postSanPham = async (req, res) => {
     try {
         const check = await SanPham.findOne({ idHangSP, tenSP })
         if (check) return res.status(400).json({ message: 'Sản phẩm này đã tồn tại' })
-        const anhSP = req.files.map(file => `http://${process.env.IP}/${process.env.PORT}/uploads/${file.filename}`)
+        const anhSP = req.files.map(file => `http://${process.env.IP}:${process.env.PORT}/uploads/${file.filename}`)
         const newSanPham = await SanPham.create({ idHangSP, tenSP, anhSP })
         res.status(200).json({ message: 'Thêm sản phẩm mới thành công', data: newSanPham })
 

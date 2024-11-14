@@ -7,7 +7,7 @@ const SanphamCT = require('../models/ChiTietSP')
 
 exports.getDonHang_Admin = async (req, res) => {
     try {
-        const listDonHang = await DonHangSchema.find()
+        const listDonHang = await DonHangSchema.find().populate('idAdmin', 'HoTen').populate('idKhachHang', 'HoTen')
         if (listDonHang.length === 0) return res.status(404).json({ message: 'Chưa có ai đặt hàng' })
         res.status(200).json({ message: 'Hiển thị danh sách đơn hàng thành công', data: listDonHang })
     } catch (error) {
@@ -102,7 +102,8 @@ exports.postDonHang = async (req, res) => {
                 const newDonHangCT = new DonHangCT({
                     idDonHang: newDonHang._id,
                     idSanPhamCT: item.idSanPhamCT,
-                    SoLuongMua: item.SoLuongMua
+                    SoLuongMua: item.SoLuongMua,
+                    TongTien: item.SoLuongMua * spct.Gia
                 });
 
                 const newSL = spct.SoLuong - item.SoLuongMua;
@@ -119,8 +120,15 @@ exports.postDonHang = async (req, res) => {
             }
 
             // Tạo hóa đơn
+            const listDonHangCT = await DonHangCT.find({ idDonHang: newDonHang._id })
+            let TongTien = 0
+            if (!listDonHangCT) return res.status(400).json({ message: 'Lỗi tính tổng tiền hóa đơn' })
+            listDonHangCT.map(donhangct => {
+                TongTien = TongTien + donhangct.TongTien
+            })
             const newHoaDon = new HoaDonSchema({
-                idDonHang: newDonHang._id
+                idDonHang: newDonHang._id,
+                TongTien
             });
             await newHoaDon.save();
 
@@ -145,7 +153,8 @@ exports.postDonHang = async (req, res) => {
             const newDonHangCT = new DonHangCT({
                 idDonHang: newDonHang._id,
                 idSanPhamCT: item.idSanPhamCT,
-                SoLuongMua: item.SoLuongMua
+                SoLuongMua: item.SoLuongMua,
+                TongTien : item.SoLuongMua * spct.Gia
             });
 
 
@@ -205,18 +214,42 @@ exports.huyDon_KhachHang = async (req, res) => {
         const _id = req.params.id
         const donHang = await DonHangSchema.findById(_id)
         if (donHang.TrangThai != 'Chờ duyệt') return res.status(400).json({ message: 'đơn hàng này đang giao không thể hủy' })
-        const newDonHang = await DonHangSchema.findByIdAndUpdate(_id,{TrangThai: 'Hủy'})
-        const listSPCT = await DonHangCT.find({idDonHang: _id})
+        const newDonHang = await DonHangSchema.findByIdAndUpdate(_id, { TrangThai: 'Hủy' })
+        const listSPCT = await DonHangCT.find({ idDonHang: _id })
         // for (const item of listSPCT) {
         //     const spct = await SanphamCT.findById(item.idSanPhamCT)
         //     const newSL = spct.SoLuong + item.SoLuongMua;
 
         //     const updateSoLuongSPCT = await SanphamCT.findByIdAndUpdate(item.idSanPhamCT, { SoLuong: newSL }, { new: true });
         //     await updateSoLuongSPCT.save();
-            
+
         // }
         newDonHang.save()
         res.status(200).json({ message: 'Hủy đơn thành công', data: newDonHang })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
+exports.XacNhan_DonHang = async (req, res) => {
+    try {
+        const _id = req.params.id
+        const DonHang = await DonHangSchema.findById(_id)
+        if (DonHang.TrangThai === 'Chờ duyệt') return res.status(400).json({ message: 'Đơn hàng chưa được duyệt từ Admin' })
+        const newDonHang = await DonHangSchema.findByIdAndUpdate(_id, { TrangThai: 'Thành công' })
+        const listDonHangCT = await DonHangCT.find({ idDonHang: _id })
+        if (!listDonHangCT) return res.status(400).json({ message: 'Lỗi Khi tính tổng tiền hóa đơn' })
+        let TongTien = 0
+        if (!listDonHangCT) return res.status(400).json({ message: 'Lỗi tính tổng tiền hóa đơn' })
+        listDonHangCT.map(donhangct => {
+            TongTien = TongTien + donhangct.TongTien
+        })
+        const newHoaDon = new HoaDonSchema({
+            idDonHang: newDonHang._id,
+            TongTien
+        });
+        await newDonHang.save()
+        await newHoaDon.save();
+        res.status(200).json({ message: 'Nhận hàng thành công', data: newDonHang })
     } catch (error) {
         res.status(500).json({ message: error.message })
     }

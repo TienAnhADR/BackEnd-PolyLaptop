@@ -9,6 +9,8 @@ const ChiTietSPRouter = require('./routers/ChiTietSPRouter')
 const YeuThichRouter = require('./routers/YeuThichRouter')
 const GiohangRouter = require('./routers/GioHangRouter')
 const DonHangRouter = require('./routers/DonHangRouter')
+const HoaDonRouter = require('./routers/HoaDonRouter')
+const DonnHangCTRouter = require('./routers/DonHangCTRouter')
 
 require('dotenv').config()
 const app = express()
@@ -36,6 +38,8 @@ app.use('/chi-tiet-san-pham',ChiTietSPRouter)
 app.use('/yeu-thich',YeuThichRouter)
 app.use('/gio-hang',GiohangRouter)
 app.use('/don-hang',DonHangRouter)
+app.use('/hoa-don',HoaDonRouter)
+app.use('/chi-tiet-don-hang',DonnHangCTRouter)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.get('/', (req, res) => {
   res.send('Hello World!')

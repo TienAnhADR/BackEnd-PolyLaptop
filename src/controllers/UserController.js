@@ -56,7 +56,7 @@ exports.loginUser = async (req, res) => {
 
         // const isMatch = await user.matchPassword(Password)
         // console.log(isMatch);
-        if(user.Role !== 'khachhang') return res.status(400).json({message: 'bạn không phải là khách hàng'})
+        if(user.Role !== 'Khách hàng') return res.status(400).json({message: 'bạn không phải là khách hàng'})
 
         if (user && (await user.matchPassword(Password))) {
             const AccessToken = generateToken(user)
@@ -161,6 +161,15 @@ exports.uploadAvatar = async (req, res) => {
         user.Avatar = Avatar
         await user.save()
         res.status(200).json({message:'Cập nhật Avatar thành công', data: Avatar})
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+}
+exports.getListUser = async (req,res) =>{
+    try {
+        const Users = await User.find()
+        if(!Users) return res.status(400).json({message: 'Không tìm thấy người dùng nào'})
+        res.status(200).json({message: 'Lấy danh sách người dùng thành công', data: Users})
     } catch (error) {
         res.status(500).json({message: error.message})
     }

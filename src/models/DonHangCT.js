@@ -16,7 +16,8 @@ const DonHangCTSchema = new mongoose.Schema({
         require: true
     },
     TongTien:{
-        type:Number
+        type:Number,
+        default: 0
     }
 })
 DonHangCTSchema.pre('save', async function(next){
