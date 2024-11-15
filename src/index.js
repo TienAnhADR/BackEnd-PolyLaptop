@@ -11,7 +11,7 @@ const GiohangRouter = require('./routers/GioHangRouter')
 const DonHangRouter = require('./routers/DonHangRouter')
 const HoaDonRouter = require('./routers/HoaDonRouter')
 const DonnHangCTRouter = require('./routers/DonHangCTRouter')
-
+const Thongke = require('./routers/Thongke')
 require('dotenv').config()
 const app = express()
 
@@ -32,15 +32,28 @@ app.use((req, res, next) => {
   console.log(`[${currentTime}] ${method} request to ${url}`);
   next(); // Đảm bảo gọi next() để yêu cầu tiếp tục đến route handler
 });
-app.use('/auth', UserRouter)
-app.use('/hang', HangRouter)
-app.use('/san-pham', SanPhamRouter)
-app.use('/chi-tiet-san-pham', ChiTietSPRouter)
-app.use('/yeu-thich', YeuThichRouter)
-app.use('/gio-hang', GiohangRouter)
-app.use('/don-hang', DonHangRouter)
-app.use('/hoa-don', HoaDonRouter)
-app.use('/chi-tiet-don-hang', DonnHangCTRouter)
+// <<<<<<< HEAD
+// app.use('/auth', UserRouter)
+// app.use('/hang', HangRouter)
+// app.use('/san-pham', SanPhamRouter)
+// app.use('/chi-tiet-san-pham', ChiTietSPRouter)
+// app.use('/yeu-thich', YeuThichRouter)
+// app.use('/gio-hang', GiohangRouter)
+// app.use('/don-hang', DonHangRouter)
+// app.use('/hoa-don', HoaDonRouter)
+// app.use('/chi-tiet-don-hang', DonnHangCTRouter)
+// =======
+app.use('/auth',UserRouter)
+app.use('/hang',HangRouter)
+app.use('/san-pham',SanPhamRouter)
+app.use('/chi-tiet-san-pham',ChiTietSPRouter)
+app.use('/yeu-thich',YeuThichRouter)
+app.use('/gio-hang',GiohangRouter)
+app.use('/don-hang',DonHangRouter)
+app.use('/hoa-don',HoaDonRouter)
+app.use('/chi-tiet-don-hang',DonnHangCTRouter)
+app.use('/thong-ke',Thongke)
+// >>>>>>> 9d7069fe5daf1d9d6101bfec3baebe472b49d718
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.get('/', (req, res) => {
   res.send('Hello World!')
