@@ -16,8 +16,8 @@ require('dotenv').config()
 const app = express()
 
 mongoose.connect(process.env.MONGO_URI)
-.then(()=> console.log('MongoDB Connected'))
-.catch((err)=> console.log('MongoDB connection err', err))
+  .then(() => console.log('MongoDB Connected'))
+  .catch((err) => console.log('MongoDB connection err', err))
 const port = process.env.PORT || 5000
 
 
@@ -25,21 +25,22 @@ const port = process.env.PORT || 5000
 
 app.use(cors())
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   const { method, url } = req;
   const currentTime = new Date().toISOString();
   console.log(`[${currentTime}] ${method} request to ${url}`);
   next(); // Đảm bảo gọi next() để yêu cầu tiếp tục đến route handler
 });
-app.use('/auth',UserRouter)
-app.use('/hang',HangRouter)
-app.use('/san-pham',SanPhamRouter)
-app.use('/chi-tiet-san-pham',ChiTietSPRouter)
-app.use('/yeu-thich',YeuThichRouter)
-app.use('/gio-hang',GiohangRouter)
-app.use('/don-hang',DonHangRouter)
-app.use('/hoa-don',HoaDonRouter)
-app.use('/chi-tiet-don-hang',DonnHangCTRouter)
+app.use('/auth', UserRouter)
+app.use('/hang', HangRouter)
+app.use('/san-pham', SanPhamRouter)
+app.use('/chi-tiet-san-pham', ChiTietSPRouter)
+app.use('/yeu-thich', YeuThichRouter)
+app.use('/gio-hang', GiohangRouter)
+app.use('/don-hang', DonHangRouter)
+app.use('/hoa-don', HoaDonRouter)
+app.use('/chi-tiet-don-hang', DonnHangCTRouter)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.get('/', (req, res) => {
   res.send('Hello World!')

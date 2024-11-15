@@ -233,7 +233,9 @@ exports.huyDon_KhachHang = async (req, res) => {
 exports.XacNhan_DonHang = async (req, res) => {
     try {
         const _id = req.params.id
-        const DonHang = await DonHangSchema.findById(_id)
+        const DonHang = await DonHangSchema.findOne({_id})
+        console.log(DonHang);
+        
         if (DonHang.TrangThai === 'Chờ duyệt') return res.status(400).json({ message: 'Đơn hàng chưa được duyệt từ Admin' })
         const newDonHang = await DonHangSchema.findByIdAndUpdate(_id, { TrangThai: 'Thành công' })
         const listDonHangCT = await DonHangCT.find({ idDonHang: _id })

@@ -3,7 +3,7 @@ const HoaDonCT = require('../models/DonHangCT')
 
 
 exports.getListHoaDonALL = async (req, res) => {
-    console.log('vào đây');
+    // console.log('vào đây');
     
     try {
         const listHD = await HoaDon.find().populate({
@@ -11,11 +11,11 @@ exports.getListHoaDonALL = async (req, res) => {
             populate: [
                 {
                     path: 'idKhachHang',
-                    select: 'HoTen'
+                    select: 'HoTen Sdt'
                 },
                 {
                     path: 'idAdmin',
-                    select: 'HoTen'
+                    select: 'HoTen Sdt'
                 }
             ]
         })

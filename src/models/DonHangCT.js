@@ -17,7 +17,7 @@ const DonHangCTSchema = new mongoose.Schema({
     },
     TongTien:{
         type:Number,
-        default: 0
+        
     }
 })
 DonHangCTSchema.pre('save', async function(next){
@@ -28,6 +28,9 @@ DonHangCTSchema.pre('save', async function(next){
         
         const ctsp = await SanphamCT.findById(this.idSanPhamCT)
         if(!ctsp) return next(new Error('Sản phẩm không tồn tại'));
+
+        // Tính tổng tiền: giá sản phẩm * số lượng mua
+        this.TongTien = ctsp.Gia * this.SoLuongMua;
         
         next()
         } catch (error) {
