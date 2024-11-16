@@ -16,12 +16,13 @@ const generateRefeshToken = (user) => {
 
 // đăng ký người dùng
 exports.registerUser = async (req, res) => {
-    const { UserName, Password, HoTen, Tuoi, Email, Sdt, Avatar, DiaChi, Role } = req.body
+    const { UserName, Password } = req.body
+    if(!UserName || !Password) return res.status(400).json({message:'Không để trống dữ liệu'})
     try {
         const userExitsts = await User.findOne({ UserName })
         if (userExitsts) return res.status(400).json({ message: "Người dùng đã tồn tại" })
         // tạo người dùng mới
-        const user = await User.create({ UserName, Password, HoTen, Tuoi, Email, Sdt, Avatar, DiaChi, Role })
+        const user = await User.create({ UserName, Password })
         const AccessToken = generateToken(user)
         const RefeshToken = generateRefeshToken(user)
 
@@ -30,14 +31,8 @@ exports.registerUser = async (req, res) => {
         // trả về token người dùng
         res.status(201).json({
             _id: user._id,
-            HoTen: user.HoTen,
-            Tuoi: user.Tuoi,
-            Email: user.Email,
-            Sdt: user.Sdt,
-            Avatar: user.Avatar,
-            DiaChi: user.DiaChi,
             UserName: user.UserName,
-            Role: user.Role || 'customer',
+            Role: user.Role,
             AccessToken,
             RefeshToken
 

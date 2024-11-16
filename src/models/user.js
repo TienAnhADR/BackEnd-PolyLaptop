@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
 const argon2 = require('argon2')
 const UserSchema = new mongoose.Schema({
-    UserName: {type: String, require: true},
-    Password: {type: String},
+    UserName: {type: String, require: true, unique: true},
+    Password: {type: String, require: true},
     HoTen: {type: String},
     Tuoi: {type: Number},
-    Email: {type: String, require: true},
-    Sdt: {type: String, require: true},
+    Email: {type: String, unique: true},
+    Sdt: {type: String},
     Avatar: {type: String},
     DiaChi: {type: String},
     Role: {type: String, enum: ['admin','Khách hàng'], default: 'Khách hàng'},
