@@ -3,7 +3,7 @@ const ChiTietSP = require('../models/ChiTietSP')
 exports.getGioHang = async (req, res) => {
     const idUser = req.user._id
     try {
-        const listGioHang = await GioHang.find().populate({
+        const listGioHang = await GioHang.find({idUser}).populate({
             path:'idChiTietSP',
             select: 'MauSac Ram SSD ManHinh SoLuong Gia MoTa',
             populate: {
