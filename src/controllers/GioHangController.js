@@ -3,7 +3,14 @@ const ChiTietSP = require('../models/ChiTietSP')
 exports.getGioHang = async (req, res) => {
     const idUser = req.user._id
     try {
-        const listGioHang = await GioHang.find()
+        const listGioHang = await GioHang.find().populate({
+            path:'idChiTietSP',
+            select: 'MauSac Ram SSD ManHinh SoLuong Gia MoTa',
+            populate: {
+                path:'idSanPham',
+                select: 'tenSP anhSP'
+            }
+        })
         if (listGioHang.length === 0) return res.status(400).json({ message: 'Bạn chưa thêm sản phẩm nào vào giỏ hàng' })
         res.status(200).json({ message: 'Hiển thị danh sách giỏ hàng thành công', data: listGioHang })
     } catch (error) {
