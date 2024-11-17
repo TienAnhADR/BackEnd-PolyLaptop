@@ -13,6 +13,6 @@ router.get('/:id', getListSP)
 router.post('/', protect, admin, postChiTietSP)
 
 // Update sản phẩm chi tiết
-router.put('/', protect, admin, updateSPCT)
+router.put('/:id', protect, admin, updateSPCT)
 
 module.exports = router
