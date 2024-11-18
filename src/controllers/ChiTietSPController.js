@@ -3,7 +3,14 @@ const ChiTietSP = require('../models/ChiTietSP')
 // lấy toàn bộ chi tiết sản phẩm
 exports.getListSanPhamCT = async (req, res) => {
     try {
-        const listSanPhamCT = await ChiTietSP.find().populate('idSanPham','anhSP tenSP')
+        const listSanPhamCT = await ChiTietSP.find().populate({
+            path: 'idSanPham',
+            select: 'anhSP tenSP',
+            populate: {
+                path: 'idHangSP',
+                select: 'TenHang'
+            }
+        })
         if (!listSanPhamCT) return res.status(400).json({ message: 'Hiện tại chưa có sản phẩm chi tiết nào' })
         res.status(200).json({ message: 'Hiển thị danh sách sản phẩm chi tiết thành công', data: listSanPhamCT })
     } catch (error) {
