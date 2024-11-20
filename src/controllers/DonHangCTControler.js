@@ -1,7 +1,7 @@
 const DonHangCT = require('../models/DonHangCT')
 
 exports.getDonHangCT = async (req, res) =>{
-    console.log('get ctdh');
+    // console.log('get ctdh');
     
     try {
         const idDonHang = req.params.id

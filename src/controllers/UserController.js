@@ -178,6 +178,8 @@ exports.updateUser = async (req, res) => {
         if (req.file) {
             Avatar = `/uploads/${req.file.filename}`
         }
+        const checkMail = await User.findOne({ Email })
+        if (checkMail) return res.status(400).json({ message: 'Email này đã có người sử dụng vui lòng nhập email khác' })
         const user = await User.findByIdAndUpdate(_id, { HoTen, Tuoi, Email, Sdt, Avatar, DiaChi }, { new: true })
         if (!user) return res.status(400).json({ message: 'Lỗi sửa user' })
         await user.save()
@@ -201,4 +203,37 @@ exports.DoiMK = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
-} 
+}
+exports.AddUserAdmin = async (req, res) => {
+
+    const { UserName, Password, Role, HoTen, Tuoi, Email, Sdt, DiaChi } = req.body
+    if (!UserName || !Password || !Role || !HoTen || !Tuoi || !Email || !Sdt || !DiaChi) return res.status(400).json({ message: 'Không để trống dữ liệu' })
+
+    try {
+        const userExitsts = await User.findOne({ UserName })
+        if (userExitsts) return res.status(400).json({ message: "Người dùng đã tồn tại" })
+        const checkEmail = await User.findOne({ Email })
+        if (checkEmail) return res.status(400).json({ message: 'Email này đã có người dùng' })
+        // tạo người dùng mới
+        const user = await User.create({ UserName, Role, HoTen, Tuoi, Email, Sdt, DiaChi })
+        await user.save()
+        // trả về token người dùng
+        res.status(201).json({
+            message: 'Thêm người dùng thành công', data: user
+        })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+
+    }
+}
+exports.Logout = async (req, res) => {
+    const _id = req.user._id
+    try {
+        const user = await User.findByIdAndUpdate(_id, {  RefeshToken: '' })
+        if (!user) return res.status(404).json({ message: 'Không có người dùng' })
+        await user.save()
+        res.status(200).json({ message: 'Đăng xuất thành công' })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}

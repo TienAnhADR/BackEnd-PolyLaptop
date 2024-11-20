@@ -1,5 +1,5 @@
 const express = require('express')
-const { registerUser, loginUser, refeshToken, uploadAvatar, loginAdmin, getListUser, updateUser, DoiMK } = require('../controllers/UserController')
+const { registerUser, loginUser, refeshToken, uploadAvatar, loginAdmin, getListUser, updateUser, DoiMK, AddUserAdmin, Logout } = require('../controllers/UserController')
 const { protect, admin } = require('../middleware/authMiddleware')
 const upload = require('../config/upload')
 const router = express.Router()
@@ -28,4 +28,11 @@ router.get('/user', protect, admin, getListUser)
 
 // đổi mật khẩu
 router.put('/user/doi-mat-khau',protect,DoiMK)
+
+// thêm người dùng mới (Admin)
+router.post('/user', protect,admin,upload.single('avatar'),AddUserAdmin)
+
+// đăng xuất
+router.put('/logout',protect,Logout)
+
 module.exports = router

@@ -10,7 +10,6 @@ const UserSchema = new mongoose.Schema({
     Avatar: {type: String},
     DiaChi: {type: String},
     Role: {type: String, enum: ['admin','Khách hàng'], default: 'Khách hàng'},
-    AccessToken:{ type: String},
     RefeshToken: {type: String}
 })
 UserSchema.pre('save', async function (next) {
