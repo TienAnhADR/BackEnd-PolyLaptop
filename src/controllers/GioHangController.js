@@ -47,3 +47,17 @@ exports.deleteGioHang = async (req, res) => {
         res.status(500).json({message: error.message})
     }
 }
+
+exports.deleteGioHang2 = async (req,res) =>{
+    const _id = req.params.id
+    const idUser = req.user._id
+    try {
+        const check = await GioHang.findOne({_id,idUser})
+        if(!check) return res.status(400).json({message:'Lỗi logic backend'})
+        const deleteGioHang = await GioHang.findByIdAndDelete(_id)
+        res.status(200).json({message:'Xóa sản phẩm khỏi giỏ hàng thành công', data: deleteGioHang})
+        
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+}
