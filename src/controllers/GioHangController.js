@@ -1,5 +1,6 @@
 const GioHang = require('../models/GioHang')
 const ChiTietSP = require('../models/ChiTietSP')
+const { populate } = require('../models/SanPham')
 exports.getGioHang = async (req, res) => {
     const idUser = req.user._id
     try {
@@ -8,7 +9,11 @@ exports.getGioHang = async (req, res) => {
             select: 'MauSac Ram SSD ManHinh SoLuong Gia MoTa',
             populate: {
                 path:'idSanPham',
-                select: 'tenSP anhSP'
+                select: 'tenSP anhSP',
+                populate: {
+                    path: 'idHangSP',
+                    select:'TenHang'
+                }
             }
         })
         if (listGioHang.length === 0) return res.status(400).json({ message: 'Bạn chưa thêm sản phẩm nào vào giỏ hàng' })
