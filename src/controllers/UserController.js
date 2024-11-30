@@ -178,8 +178,8 @@ exports.updateUser = async (req, res) => {
         if (req.file) {
             Avatar = `/uploads/${req.file.filename}`
         }
-        const checkMail = await User.findOne({ Email })
-        if (checkMail) return res.status(400).json({ message: 'Email này đã có người sử dụng vui lòng nhập email khác' })
+        // const checkMail = await User.findOne({ Email })
+        // if (checkMail) return res.status(400).json({ message: 'Email này đã có người sử dụng vui lòng nhập email khác' })
         const user = await User.findByIdAndUpdate(_id, { HoTen, Tuoi, Email, Sdt, Avatar, DiaChi }, { new: true })
         if (!user) return res.status(400).json({ message: 'Lỗi sửa user' })
         await user.save()

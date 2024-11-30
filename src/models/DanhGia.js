@@ -5,14 +5,14 @@ const DanhGiaSchema = new mongoose.Schema({
         require: true,
         ref: 'user'
     },
-    idSanPham: {
+    idHoaDon: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'sanpham'
+        ref: 'hoadon'
     },
     Diem:{
         type: Number,
         enum: [1,2,3,4,5],
-        default: 4
+        default: 5
     },
     NoiDung:{
         type: String,
