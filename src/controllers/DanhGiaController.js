@@ -1,6 +1,7 @@
 const DanhGia = require('../models/DanhGia')
 
 exports.getListDanhGia = async (req, res) => {
+    const {idHoaDon} = req.body
     try {
         const listDanhGia = await DanhGia.find()
         if (!listDanhGia) return res.status(400).json({ message: 'Chưa có ai đánh giá sản phẩm này' })
@@ -11,6 +12,6 @@ exports.getListDanhGia = async (req, res) => {
 }
 exports.postDanhGia = async (req, res) => {
     const idUser = req.user._id
-    const {idSanPham,Diem,NoiDung} = req.body
+    const {idHoaDon,Diem,NoiDung} = req.body
     if(!idUser) res.status(400).json({message: 'Vui lòng đăng nhập'})
 }

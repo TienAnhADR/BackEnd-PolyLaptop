@@ -193,6 +193,8 @@ exports.updateUser = async (req, res) => {
 exports.DoiMK = async (req, res) => {
     const _id = req.user._id
     const { oldPassword, newPassword } = req.body
+    console.log('id: ',_id);
+    
     try {
         const user = await User.findById(_id)
         if (!(await user.matchPassword(oldPassword))) return res.status(400).json({ message: 'Mật khẩu cũ của bạn không đúng' })
@@ -233,6 +235,23 @@ exports.Logout = async (req, res) => {
         if (!user) return res.status(404).json({ message: 'Không có người dùng' })
         await user.save()
         res.status(200).json({ message: 'Đăng xuất thành công' })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
+exports.UpdateUserToken = async (req,res)=>{
+    const _id = req.user._id
+    const { HoTen, Tuoi, Email, Sdt, DiaChi } = req.body
+    let Avatar = ''
+    try {
+        if (req.file) {
+            Avatar = `/uploads/${req.file.filename}`
+        }
+        
+        const user = await User.findByIdAndUpdate(_id, { HoTen, Tuoi, Email, Sdt, Avatar, DiaChi }, { new: true })
+        if (!user) return res.status(400).json({ message: 'Lỗi sửa user' })
+        await user.save()
+        res.status(200).json({ message: 'Cập nhật thông tin thành công', data: user })
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
