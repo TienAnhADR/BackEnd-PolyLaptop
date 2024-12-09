@@ -1,4 +1,5 @@
 const DonHangCT = require('../models/DonHangCT')
+const { populate } = require('../models/User')
 
 exports.getDonHangCT = async (req, res) =>{
     // console.log('get ctdh');
@@ -7,10 +8,11 @@ exports.getDonHangCT = async (req, res) =>{
         const idDonHang = req.params.id
         const listDHCT = await DonHangCT.find({idDonHang}).populate({
             path: 'idSanPhamCT',
-            select:'Gia',
             populate:{
                 path: 'idSanPham',
-                select: 'tenSP'
+                populate:{
+                    path:'idHangSP'
+                }
             }
 
         })
