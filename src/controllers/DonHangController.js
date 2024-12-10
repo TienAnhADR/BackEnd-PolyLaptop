@@ -7,7 +7,7 @@ const SanphamCT = require('../models/ChiTietSP')
 
 exports.getDonHang_Admin = async (req, res) => {
     try {
-        const listDonHang = await DonHangSchema.find().populate('idAdmin', 'HoTen').populate('idKhachHang', 'HoTen')
+        const listDonHang = await DonHangSchema.find().sort({NgayDatHang: -1}).populate('idAdmin', 'HoTen').populate('idKhachHang', 'HoTen')
         if (listDonHang.length === 0) return res.status(404).json({ message: 'Chưa có ai đặt hàng' })
         res.status(200).json({ message: 'Hiển thị danh sách đơn hàng thành công', data: listDonHang })
     } catch (error) {
@@ -141,33 +141,30 @@ exports.postDonHang = async (req, res) => {
         await newDonHang.save();
 
         let checkkk = 0;
+        let Tong  = 0
         for (const item of SanPhamCTs) {
             const spct = await SanphamCT.findById(item.idSanPhamCT);
-
             // Kiểm tra số lượng sản phẩm trong kho
             if (spct.SoLuong < item.SoLuongMua || spct.SoLuong <= 0) {
                 checkkk = 1;
                 break;
             }
-
             const newDonHangCT = new DonHangCT({
                 idDonHang: newDonHang._id,
                 idSanPhamCT: item.idSanPhamCT,
                 SoLuongMua: item.SoLuongMua,
                 TongTien : item.SoLuongMua * spct.Gia
             });
-
-
-
+            Tong += item.SoLuongMua * spct.Gia
             await newDonHangCT.save();
-
         }
 
         // Nếu có sản phẩm không đủ số lượng
         if (checkkk > 0) {
             return res.status(400).json({ message: `Sản phẩm nào đó không đủ số lượng bạn mua` });
         }
-        res.status(200).json({ message: 'Đặt hàng thành công', data: newDonHang });
+        const DonHang = await DonHangSchema.findByIdAndUpdate({_id: newDonHang._id},{TongTien:Tong},{new: true})
+        res.status(200).json({ message: 'Đặt hàng thành công', data: DonHang });
 
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -206,7 +203,27 @@ exports.duyetDonHang_Admin = async (req, res) => {
     }
 
 }
+exports.huyDon_Admin = async (req, res) => {
 
+    try {
+        const _id = req.params.id
+        // const donHang = await DonHangSchema.findById(_id)
+        // if (donHang.TrangThai != 'Chờ duyệt') return res.status(400).json({ message: 'đơn hàng này đang giao không thể hủy' })
+        const newDonHang = await DonHangSchema.findByIdAndUpdate(_id, { TrangThai: 'Hủy' })
+        const listSPCT = await DonHangCT.find({ idDonHang: _id })
+        for (const item of listSPCT) {
+            const spct = await SanphamCT.findById(item.idSanPhamCT)
+            const newSL = spct.SoLuong + item.SoLuongMua;
+
+            const updateSoLuongSPCT = await SanphamCT.findByIdAndUpdate(item.idSanPhamCT, { SoLuong: newSL }, { new: true });
+            await updateSoLuongSPCT.save();
+        }
+        newDonHang.save()
+        res.status(200).json({ message: 'Hủy đơn thành công', data: newDonHang })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
 // hủy đơn hàng nếu đơn hàng chưa được duyệt
 exports.huyDon_KhachHang = async (req, res) => {
 
@@ -216,14 +233,13 @@ exports.huyDon_KhachHang = async (req, res) => {
         if (donHang.TrangThai != 'Chờ duyệt') return res.status(400).json({ message: 'đơn hàng này đang giao không thể hủy' })
         const newDonHang = await DonHangSchema.findByIdAndUpdate(_id, { TrangThai: 'Hủy' })
         const listSPCT = await DonHangCT.find({ idDonHang: _id })
-        // for (const item of listSPCT) {
-        //     const spct = await SanphamCT.findById(item.idSanPhamCT)
-        //     const newSL = spct.SoLuong + item.SoLuongMua;
+        for (const item of listSPCT) {
+            const spct = await SanphamCT.findById(item.idSanPhamCT)
+            const newSL = spct.SoLuong + item.SoLuongMua;
 
-        //     const updateSoLuongSPCT = await SanphamCT.findByIdAndUpdate(item.idSanPhamCT, { SoLuong: newSL }, { new: true });
-        //     await updateSoLuongSPCT.save();
-
-        // }
+            const updateSoLuongSPCT = await SanphamCT.findByIdAndUpdate(item.idSanPhamCT, { SoLuong: newSL }, { new: true });
+            await updateSoLuongSPCT.save();
+        }
         newDonHang.save()
         res.status(200).json({ message: 'Hủy đơn thành công', data: newDonHang })
     } catch (error) {
@@ -234,7 +250,7 @@ exports.XacNhan_DonHang = async (req, res) => {
     try {
         const _id = req.params.id
         const DonHang = await DonHangSchema.findOne({_id})
-        console.log(DonHang);
+        // console.log(DonHang);
         
         if (DonHang.TrangThai === 'Chờ duyệt') return res.status(400).json({ message: 'Đơn hàng chưa được duyệt từ Admin' })
         const newDonHang = await DonHangSchema.findByIdAndUpdate(_id, { TrangThai: 'Thành công' })
@@ -251,7 +267,7 @@ exports.XacNhan_DonHang = async (req, res) => {
         });
         await newDonHang.save()
         await newHoaDon.save();
-        res.status(200).json({ message: 'Nhận hàng thành công', data: newDonHang })
+        res.status(200).json({ message: 'Xác nhận giao hàng thành công', data: newDonHang })
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
