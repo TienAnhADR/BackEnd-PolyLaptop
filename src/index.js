@@ -16,8 +16,9 @@ const GiohangRouter = require('./routers/GioHangRouter');
 const DonHangRouter = require('./routers/DonHangRouter');
 const HoaDonRouter = require('./routers/HoaDonRouter');
 const DonnHangCTRouter = require('./routers/DonHangCTRouter');
-const Thongke = require('./routers/Thongke');
- const MessageRouter = require('./routers/MessageRouter'); // API gửi tin nhắn
+const Thongke = require('./routers/Thongke')
+const DanhGia = require('./routers/DanhGiaRouter')
+const MessageRouter = require('./routers/MessageRouter'); // API gửi tin nhắn
 
 const app = express();
 const server = http.createServer(app); // Tạo HTTP server
@@ -55,6 +56,7 @@ io.on('connection', (socket) => {
   // Lắng nghe sự kiện tham gia phòng
   socket.on('joinChat', (chatId) => {
     socket.join(chatId);
+    io.sockets.emit(`joinChat`, socket.id)
     console.log(`User ${socket.id} joined chat: ${chatId}`);
   });
 
@@ -63,14 +65,14 @@ io.on('connection', (socket) => {
     console.log(`User disconnected: ${socket.id}`);
   });
   // server lắng nghe tin nhắn mới
-  socket.on('new_message',(data)=>{
-    // console.log('tin nhan moi:',data)
-    
+  socket.on('new_message', (data) => {
+    console.log('tin nhan moi:', data)
+
     io.sockets.emit("new_message", data)
-    
+
   })
-  socket.on('new_chat_created', data=>{
-    console.log('chat mới:',data);
+  socket.on('new_chat_created', data => {
+    io.sockets.emit('new_chat_created', data)
   })
 });
 
@@ -85,7 +87,8 @@ app.use('/don-hang', DonHangRouter);
 app.use('/hoa-don', HoaDonRouter);
 app.use('/chi-tiet-don-hang', DonnHangCTRouter);
 app.use('/thong-ke', Thongke);
- app.use('/chat', MessageRouter); // Router gửi tin nhắn
+app.use('/chat', MessageRouter);
+app.use('/danh-gia', DanhGia)
 
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

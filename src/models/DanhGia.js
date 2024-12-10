@@ -12,7 +12,8 @@ const DanhGiaSchema = new mongoose.Schema({
     Diem:{
         type: Number,
         enum: [1,2,3,4,5],
-        default: 5
+        default: 5,
+        require: true
     },
     NoiDung:{
         type: String,
