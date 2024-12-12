@@ -17,7 +17,10 @@ const DanhGiaSchema = new mongoose.Schema({
     },
     NoiDung:{
         type: String,
-    } 
+    },
+    HinhAnh:{
+        type: [String]
+    }
 })
 
 const DanhGia = mongoose.model('danhgia',DanhGiaSchema)

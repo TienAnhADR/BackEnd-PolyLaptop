@@ -7,7 +7,7 @@ const SanphamCT = require('../models/ChiTietSP')
 
 exports.getDonHang_Admin = async (req, res) => {
     try {
-        const listDonHang = await DonHangSchema.find().sort({NgayDatHang: -1}).populate('idAdmin', 'HoTen').populate('idKhachHang', 'HoTen')
+        const listDonHang = await DonHangSchema.find().sort({NgayDatHang: -1}).populate('idAdmin', 'HoTen Sdt').populate('idKhachHang', 'HoTen Sdt DiaChi')
         if (listDonHang.length === 0) return res.status(404).json({ message: 'Chưa có ai đặt hàng' })
         res.status(200).json({ message: 'Hiển thị danh sách đơn hàng thành công', data: listDonHang })
     } catch (error) {
@@ -230,7 +230,7 @@ exports.huyDon_KhachHang = async (req, res) => {
     try {
         const _id = req.params.id
         const donHang = await DonHangSchema.findById(_id)
-        if (donHang.TrangThai != 'Chờ duyệt') return res.status(400).json({ message: 'đơn hàng này đang giao không thể hủy' })
+        if (donHang.TrangThai != 'Chờ duyệt') return res.status(400).json({ message: 'Đơn hàng này đang giao không thể hủy vui lòng liên hệ admin để hủy' })
         const newDonHang = await DonHangSchema.findByIdAndUpdate(_id, { TrangThai: 'Hủy' })
         const listSPCT = await DonHangCT.find({ idDonHang: _id })
         for (const item of listSPCT) {
