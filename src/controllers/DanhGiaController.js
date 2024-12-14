@@ -13,8 +13,11 @@ exports.getListDanhGia_Admin = async (req, res) => {
     }
 }
 exports.postDanhGia = async (req, res) => {
-    const idUser = req.user._id
-    const { Diem, NoiDung } = req.body
+    // const idUser = req.user._id
+    
+    const { Diem, NoiDung,idUser } = req.body
+    console.log(idUser,"df");
+    
     const idDonHang = req.params.id
     try {
         const hoaDon = await HoaDon.findOne({ idDonHang })
