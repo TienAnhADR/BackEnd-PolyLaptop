@@ -1,3 +1,4 @@
+const { populate } = require('../models/ChiTietSP')
 const DanhGia = require('../models/DanhGia')
 const DonHang = require('../models/DonHang')
 const DonHangCT = require('../models/DonHangCT')
@@ -15,7 +16,7 @@ exports.getListDanhGia_Admin = async (req, res) => {
 exports.postDanhGia = async (req, res) => {
     // const idUser = req.user._id
     
-    const { Diem, NoiDung,idUser } = req.body
+    const { Diem, NoiDung, idUser } = req.body
     console.log(idUser,"df");
     
     const idDonHang = req.params.id
@@ -45,6 +46,30 @@ exports.getListDanhGia_KhachHang = async (req, res) => {
         const listDanhGia = await DanhGia.find({ idHoaDon: { $in: listIdHoaDon } }).populate('idUser', 'HoTen')
         res.status(200).json({ message: 'Lấy danh sách đánh giá thành công', data: listDanhGia })
 
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
+
+exports.getSPCT_danhGia = async (req,res) =>{
+    const _id = req.params.id
+    try {
+        const danhgia = await DanhGia.findById(_id).populate({
+            path: 'idHoaDon',
+            select:'idDonHang'
+        })
+        const listSPCT = await DonHangCT.find({idDonHang: danhgia.idHoaDon.idDonHang}).populate({
+            path:'idSanPhamCT',
+            populate: {
+                path: 'idSanPham',
+                populate:{
+                    path: 'idHangSP'
+                }
+            }
+            
+        })
+        const data = listSPCT.map(it => it.idSanPhamCT)
+        res.status(200).json({message:'Lấy danh sách sản phẩm đánh giá thành công', data})
     } catch (error) {
         res.status(500).json({ message: error.message })
     }

@@ -35,18 +35,19 @@ exports.getThongke = async (req,res)=>{
          
         
         for (const order of orders) {
-            
             // Lấy ngày hóa đơn được tạo (NgayNhanHang)
-             const orderDate = new Date(order.NgayNhanHang);
-             // Chuyển đổi ngày hóa đơn thành chỉ số ngày trong tuần (0 - Chủ nhật, 1 - Thứ 2, ..., 6 - Thứ 7)
-             const Dayindex = (orderDate.getDay()+6)%7;
-            // Tính doanh thu từng ngày 
-            dailyRevenue[Dayindex]+= order.TongTien
-            //Tính doanh thu 1 tuần
-            totalRevenue+=order.TongTien;
-            
+            const orderDate = new Date(order.NgayNhanHang);
+        
+            // Chuyển đổi ngày hóa đơn thành chỉ số ngày trong tuần (0 - Thứ 2, ..., 6 - Chủ nhật)
+            const Dayindex = (orderDate.getDay() + 6) % 7; // Chuyển Chủ nhật (0) thành 6, các ngày khác giảm đi 1.
+        
+            // Tính doanh thu từng ngày
+            dailyRevenue[Dayindex] += order.TongTien;
+        
+            // Tính doanh thu 1 tuần
+            totalRevenue += order.TongTien;
         }
-
+        
 
         res.json({ totalRevenue, dailyRevenue});
     } catch (error) {
