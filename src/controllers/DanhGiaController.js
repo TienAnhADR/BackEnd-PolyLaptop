@@ -1,4 +1,3 @@
-const { populate } = require('../models/ChiTietSP')
 const DanhGia = require('../models/DanhGia')
 const DonHang = require('../models/DonHang')
 const DonHangCT = require('../models/DonHangCT')

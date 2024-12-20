@@ -132,7 +132,7 @@ exports.postDonHang = async (req, res) => {
             });
             await newHoaDon.save();
 
-            return res.status(200).json({ message: 'Mua Hàng thành công', data: newHoaDon });
+            return res.status(200).json({ message: 'Mua Hàng thành công' });
         }
 
         // tạo đơn hàng mua online

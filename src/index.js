@@ -19,6 +19,7 @@ const DonnHangCTRouter = require('./routers/DonHangCTRouter');
 const Thongke = require('./routers/Thongke')
 const DanhGia = require('./routers/DanhGiaRouter')
 const MessageRouter = require('./routers/MessageRouter'); // API gửi tin nhắn
+const SanPhamRuiDoRouter = require('./routers/SanPhamRuiDoRouter')
 
 const app = express();
 const server = http.createServer(app); // Tạo HTTP server
@@ -89,6 +90,7 @@ app.use('/chi-tiet-don-hang', DonnHangCTRouter);
 app.use('/thong-ke', Thongke);
 app.use('/chat', MessageRouter);
 app.use('/danh-gia', DanhGia)
+app.use('/san-pham-rui-do', SanPhamRuiDoRouter)
 
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

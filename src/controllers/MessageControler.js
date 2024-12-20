@@ -15,7 +15,8 @@ exports.contact = async (req, res) => {
             const messages = await Message.find({ chatId: existingChat._id })
                 .sort({ timestamp: 1 }) // Sắp xếp theo thời gian
                 .populate("senderId", "HoTen Role");
-
+            console.log(existingChat);
+            
             // Trả về danh sách tin nhắn cho khách hàng
             return res.status(200).json({
                 message: "Lấy danh sách tin nhắn thành công",
@@ -27,8 +28,10 @@ exports.contact = async (req, res) => {
             participants: [customerId], // Chỉ có customerId tham gia ban đầu
         });
         await newChat.save();
-        // Trả về thông tin cuộc trò chuyện mới tạo
-        res.status(201).json({
+       
+        console.log(newChat);
+        
+        return res.status(201).json({
             message: 'Tạo cuộc hội thoại mới thành công',
             data: {messages: [], chat: newChat},
         });
