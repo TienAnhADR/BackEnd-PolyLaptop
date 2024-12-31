@@ -39,7 +39,11 @@ exports.registerUser = async (req, res) => {
 
         })
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        if (error.code === 11000) {
+            res.status(400).json({ message: 'Tài khoản đã có người đăng ký' })
+        } else {
+            res.status(500).json({ message: error.message })
+        }
 
     }
 }

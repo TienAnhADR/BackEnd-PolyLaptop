@@ -31,9 +31,19 @@ exports.contact = async (req, res) => {
        
         console.log(newChat);
         
-        return res.status(201).json({
+        const newMessage = new Message({
+            chatId: newChat._id,
+            senderId: '67090878c52c48f8648ff3d5',
+            content: 'Chào bạn, có thể giúp gì cho bạn không?'
+        })
+        await newMessage.save()
+        const messages = await Message.find({ chatId: newChat._id })
+                .sort({ timestamp: 1 }) // Sắp xếp theo thời gian
+                .populate("senderId", "HoTen Role");
+        
+        res.status(201).json({
             message: 'Tạo cuộc hội thoại mới thành công',
-            data: {messages: [], chat: newChat},
+            data: {messages, chat: newChat},
         });
 
     } catch (error) {

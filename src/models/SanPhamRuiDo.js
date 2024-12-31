@@ -12,7 +12,7 @@ const SanPhamRuiDoSchema = new mongoose.Schema({
     },
     LyDo:{
         type: String,
-        enum: ['Sản phẩm không đúng như mô tả','Sản phẩm bị hỏng hóc hoặc lỗi','Giao thiếu hàng','Giao nhầm hàng','Đổi ý hoặc không cần nữa','Mua nhầm sản phẩm'],
+        enum: ['Sản phẩm không đúng như mô tả','Sản phẩm bị hỏng hóc hoặc lỗi','Giao nhầm hàng','Đổi ý hoặc không cần nữa','Mua nhầm sản phẩm'],
         require: true
     },
     Type:{
@@ -28,6 +28,9 @@ const SanPhamRuiDoSchema = new mongoose.Schema({
     NgayYeuCau: {
         type: Date,
         default: Date.now()
+    },
+    NgayXuLy: {
+        type: Date
     }
 })
 // SanPhamRuiDoSchema.pre('save', async function(next){

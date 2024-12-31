@@ -1,6 +1,4 @@
 const DonHangCT = require('../models/DonHangCT')
-const { populate } = require('../models/User')
-
 exports.getDonHangCT = async (req, res) =>{
     // console.log('get ctdh');
     
