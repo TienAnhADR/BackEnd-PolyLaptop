@@ -28,8 +28,11 @@ exports.contact = async (req, res) => {
             participants: [customerId], // Chỉ có customerId tham gia ban đầu
         });
         await newChat.save();
+        const chat = await Chat.findOne({
+            participants: customerId,
+        }).populate('participants','HoTen Role')
        
-        console.log(newChat);
+        // console.log(newChat);
         
         const newMessage = new Message({
             chatId: newChat._id,
@@ -43,7 +46,7 @@ exports.contact = async (req, res) => {
         
         res.status(201).json({
             message: 'Tạo cuộc hội thoại mới thành công',
-            data: {messages, chat: newChat},
+            data: {messages, chat: chat},
         });
 
     } catch (error) {
