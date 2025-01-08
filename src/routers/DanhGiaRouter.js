@@ -8,5 +8,6 @@ router.post('/:id',protect,upload.array('HinhAnh'),postDanhGia)
 router.get('/',getListDanhGia_Admin)
 router.get('/:id',getListDanhGia_KhachHang)
 router.get('/san-pham/:id',getSPCT_danhGia)
+router.get('/danh-gia',protect,getListDanhGia_Admin)
 
 module.exports = router

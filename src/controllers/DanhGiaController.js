@@ -73,3 +73,13 @@ exports.getSPCT_danhGia = async (req,res) =>{
         res.status(500).json({ message: error.message })
     }
 }
+exports.getListDanhGia_KhachHang2 = async (req, res) => {
+    const idUser = req.user._id
+    try {
+        const listDanhGia = await DanhGia.find({ idUser })
+        if (!listDanhGia) return res.status(400).json({ message: 'Bạn chưa đánh giá sản phẩm nào' })
+        res.status(200).json({ message: 'Hiển thị danh sách đánh giá thành công', data: listDanhGia })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}

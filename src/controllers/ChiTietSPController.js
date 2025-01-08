@@ -1,4 +1,7 @@
 const ChiTietSP = require('../models/ChiTietSP')
+const DanhGia = require('../models/DanhGia')
+const DonHangCT = require('../models/DonHangCT')
+const HoaDon = require('../models/HoaDon')
 
 // lấy toàn bộ chi tiết sản phẩm
 exports.getListSanPhamCT = async (req, res) => {
@@ -66,6 +69,33 @@ exports.updateSPCT = async (req, res) => {
         if (!check) return res.status(400).json({ message: 'Không có sản phẩm chi tiết nào mang id này' })
         res.status(200).json({ message: 'Update Sản phẩm chi tiết thành công', data: check })
 
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
+exports.getListSP2 = async (req, res) => {
+    try {
+        const listSanPhamCT = await ChiTietSP.find().populate({
+            path: 'idSanPham',
+            select: 'anhSP tenSP',
+            populate: {
+                path: 'idHangSP',
+                select: 'TenHang'
+            }
+        })
+        if (!listSanPhamCT) return res.status(400).json({ message: 'Hiện tại chưa có sản phẩm chi tiết nào' })
+        const result = await Promise.all(listSanPhamCT.map(async (it) => {
+            const donHangCTs = await DonHangCT.find({ idSanPhamCT: it._id })
+            const idDonHangs = donHangCTs.map(it => it.idDonHang)
+            const hoaDons = await HoaDon.find({ idDonHang: { $in: idDonHangs } })
+            const idHoaDons = hoaDons.map(it => it._id)
+            const danhgia = await DanhGia.find({ idHoaDon: { $in: idHoaDons } })
+            const danhGiaTB = danhgia.reduce((a, b) => a + b.Diem, 0) / danhgia.length
+            return { ...it.toObject(), danhGiaTB }
+        }))
+        // console.log(result);
+
+        res.status(200).json({ message: 'Hiển thị danh sách sản phẩm chi tiết thành công', data: result })
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
