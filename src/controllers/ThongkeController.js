@@ -55,4 +55,39 @@ exports.getThongke = async (req,res)=>{
         res.status(500).json({ message: 'Có lỗi xảy ra khi tính doanh thu hàng tuần' });
     }
 }
+exports.getRevenueByDateRange = async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+
+        if (!startDate || !endDate) {
+            return res.status(400).json({ message: 'Vui lòng cung cấp đầy đủ startDate và endDate' });
+        }
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999); // Đặt thời gian kết thúc là cuối ngày
+
+        const orders = await HoaDon.find({
+            NgayNhanHang: {
+                $gte: start,
+                $lte: end
+            }
+        });
+
+        let totalRevenue = 0;
+        const dailyRevenue = Array(7).fill(0); // Khởi tạo mảng doanh thu hàng ngày
+
+        for (const order of orders) {
+            const orderDate = new Date(order.NgayNhanHang);
+            const Dayindex = (orderDate.getDay() + 6) % 7; // Chuyển Chủ nhật (0) thành 6, các ngày khác giảm đi 1.
+            dailyRevenue[Dayindex] += order.TongTien;
+            totalRevenue += order.TongTien;
+        }
+
+        res.json({ totalRevenue, dailyRevenue });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Có lỗi xảy ra khi tính doanh thu theo khoảng thời gian' });
+    }
+};
 
